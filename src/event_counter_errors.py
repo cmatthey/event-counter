@@ -1,0 +1,1 @@
+UNFORMED_INPUT = {"code": 101, "message": "Event input is not valid"}
