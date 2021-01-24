@@ -1,31 +1,45 @@
+import logging
 from bisect import bisect
 from collections import deque, defaultdict
 from datetime import datetime, timezone
-import logging
 
 from src.constants import MAX_EVENT_COUNT_STORED_LENGTH
 from src.validate_input import validate_input
 
 logger = logging.getLogger(__name__)
 
+
 class EventData:
+    """
+    A singleton class to store the events in a given duration defined by maxsize. Older events will be purged.
+    Events are indexed by timestamp.
+    """
     _instance = None
-    maxsize = MAX_EVENT_COUNT_STORED_LENGTH
-    queue = deque()
-    map = defaultdict(int)
+    maxsize = MAX_EVENT_COUNT_STORED_LENGTH # Max size to keep the event records
+    queue = deque() # Store event timestamp by chronological order incremented by 1
+    map = defaultdict(int)  # Store events by timestamp
 
     def __init__(self):
-        raise RuntimeError('Please call instance() instead')
+        raise RuntimeError('Please call instance() instead') # Enforce singleton
 
     @classmethod
     def instance(cls):
-        if cls._instance is None:
+        if cls._instance is None: # Enforce singleton
             logger.info("Creating a new EventData instance")
             cls._instance = cls.__new__(cls)
         return cls._instance
 
     @validate_input
     def put_event(self, event):
+        """
+        Insert events into self.map and prune oldest events if they exceed the size limit.
+
+        Args:
+            event: dict event to be tracked. Its integrity is validated by validate_input
+
+        Returns:
+
+        """
         current_timestamp_in_sec = int(datetime.now(tz=timezone.utc).timestamp())
         if not self.queue:
             self.queue.append(current_timestamp_in_sec)
@@ -41,6 +55,10 @@ class EventData:
             del self.map[expired]
 
     def get_event_counts(self):
+        """
+        Return event records, a hashmap indexed by timestamp
+
+        Returns: dict Event records, a hashmap indexed by timestamp
+
+        """
         return self.map
-
-

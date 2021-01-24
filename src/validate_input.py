@@ -7,6 +7,16 @@ logging.basicConfig(level=logging.INFO)
 
 
 def validate_input(f):
+    """
+    Validate the event format and log a warning if it doesn't contain payload.
+    It doesn't throw exception as the Event Counter project only concerns the count, not event data itself.
+
+    Args:
+        f: function to be wrapped for this decorator
+
+    Returns: wrapper
+
+    """
     @wraps(f)
     def wrapper(*args, **kwds):
         for k in kwds:
