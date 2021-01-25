@@ -4,6 +4,7 @@ from collections import deque, defaultdict
 from datetime import datetime, timezone
 
 from src.constants import MAX_EVENT_COUNT_STORED_LENGTH
+from src.event_counter_errors import INSERT_EVENT_FAILED, SUCCESS
 from src.validate_input import validate_input
 
 logger = logging.getLogger(__name__)
@@ -40,19 +41,23 @@ class EventData:
         Returns:
 
         """
-        current_timestamp_in_sec = int(datetime.now(tz=timezone.utc).timestamp())
-        if not self.queue:
-            self.queue.append(current_timestamp_in_sec)
-        elif current_timestamp_in_sec not in self.queue:
-            if current_timestamp_in_sec > self.queue[-1]:
+        try:
+            current_timestamp_in_sec = int(datetime.now(tz=timezone.utc).timestamp())
+            if not self.queue:
                 self.queue.append(current_timestamp_in_sec)
-            else:
-                # Handle the case when timestamp is out of sync
-                bisect.insort(self.queue, current_timestamp_in_sec)
-        self.map[current_timestamp_in_sec] += 1
-        if len(self.queue) > self.maxsize:
-            expired = self.queue.popleft()
-            del self.map[expired]
+            elif current_timestamp_in_sec not in self.queue:
+                if current_timestamp_in_sec > self.queue[-1]:
+                    self.queue.append(current_timestamp_in_sec)
+                else:
+                    # Handle the case when timestamp is out of sync
+                    bisect.insort(self.queue, current_timestamp_in_sec)
+            self.map[current_timestamp_in_sec] += 1
+            if len(self.queue) > self.maxsize:
+                expired = self.queue.popleft()
+                del self.map[expired]
+                return {"error_code": SUCCESS["code"], "error_message": SUCCESS["message"]}
+        except Exception:
+            return {"error_code": INSERT_EVENT_FAILED["code"], "error_message": INSERT_EVENT_FAILED["message"]}
 
     def get_event_counts(self):
         """

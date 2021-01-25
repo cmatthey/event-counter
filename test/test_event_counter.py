@@ -2,6 +2,8 @@ import json
 import logging
 import time
 
+import pytest
+
 from src.constants import MAX_EVENT_COUNT_STORED_LENGTH
 from src.event_counter import EventCounter
 from src.event_data import EventData
@@ -20,10 +22,11 @@ def test_put_event():
     expected_count = 3
     event = {"payload": {}}
     ec = EventCounter(event_data=EventData.instance())
-    existing_count = json.loads(ec.get_event_count_by_duration_window(secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
+    existing_count = json.loads(ec.get_event_count_by_duration_window(window_in_secs=MAX_EVENT_COUNT_STORED_LENGTH))[
+        "count"]
     for i in range(3):
         ec.signal_event(event=event)
-    count = json.loads(ec.get_event_count_by_duration_window(secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
+    count = json.loads(ec.get_event_count_by_duration_window(window_in_secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
     assert count - existing_count == expected_count
 
 
@@ -34,9 +37,10 @@ def test_put_event_invalid_input():
     expected_count = 1
     event = {"invalid payload": {}}
     ec = EventCounter(EventData.instance())
-    existing_count = json.loads(ec.get_event_count_by_duration_window(secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
+    existing_count = json.loads(ec.get_event_count_by_duration_window(window_in_secs=MAX_EVENT_COUNT_STORED_LENGTH))[
+        "count"]
     ec.signal_event(event=event)
-    count = json.loads(ec.get_event_count_by_duration_window(secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
+    count = json.loads(ec.get_event_count_by_duration_window(window_in_secs=MAX_EVENT_COUNT_STORED_LENGTH))["count"]
     assert count - existing_count == expected_count
 
 
@@ -51,11 +55,36 @@ def test_get_event_count_by_time():
         time.sleep(1)
         ec.signal_event(event)
     for i in range(3):
-        count = json.loads(ec.get_event_count_by_duration_window(secs=i))["count"]
+        count = json.loads(ec.get_event_count_by_duration_window(window_in_secs=i))["count"]
         assert count == expected_counts[i]
 
 
+@pytest.mark.skip(reason="Not Implemented")
 def test_put_large_number_events():
+    """
+    Validate signal a larger set of events
+    """
+    raise NotImplementedError
+
+
+@pytest.mark.skip(reason="Not Implemented")
+def test_request_time_out_of_boundary():
+    """
+    Validate signal a larger set of events
+    """
+    raise NotImplementedError
+
+
+@pytest.mark.skip(reason="Not Implemented")
+def test_request_time_in_the_past():
+    """
+    Validate signal a larger set of events
+    """
+    raise NotImplementedError
+
+
+@pytest.mark.skip(reason="Not Implemented")
+def test_request_time_in_the_future():
     """
     Validate signal a larger set of events
     """

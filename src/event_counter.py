@@ -31,19 +31,19 @@ class EventCounter:
         """
         self.event_data.put_event(event=event)
 
-    def get_event_count_by_duration_window(self, secs=1):
+    def get_event_count_by_duration_window(self, window_in_secs=1):
         """
         Return the number of events that happened over a user-specified amount of time until the current time
 
         Args:
-            secs: int duration in seconds until the current time
+            window_in_secs: int duration in seconds until the current time
 
         Returns: int the number of events in over a user-specified amount of time until the current time
 
         """
         count = 0
         current_timestamp_in_sec = int(datetime.now(tz=timezone.utc).timestamp())  # Current timestamp
-        earliest_timestamp_in_sec = current_timestamp_in_sec - secs  # The earliest timestamp to fetch event counts from
+        earliest_timestamp_in_sec = current_timestamp_in_sec - window_in_secs  # The earliest timestamp to fetch event counts from
         event_counts_by_timestamp_map = self.event_data.get_event_counts()  # Get count records indexed by timestamp
         # Interate through the key of timestamp from current to early chronologically and total up the counter for the given window
         keys = sorted(list(event_counts_by_timestamp_map.keys()), reverse=True)
@@ -52,4 +52,4 @@ class EventCounter:
             if k < earliest_timestamp_in_sec:
                 break
             count += event_counts_by_timestamp_map[k]
-        return json.dumps({"count": count, "request": {"secs_from_now": secs, "request_timestamp_in_sec": current_timestamp_in_sec}})
+        return json.dumps({"count": count, "request": {"secs_from_now": window_in_secs, "request_timestamp_in_sec": current_timestamp_in_sec}})
