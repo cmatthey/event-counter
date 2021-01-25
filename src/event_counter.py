@@ -29,6 +29,7 @@ class EventCounter:
         Returns: None
 
         """
+        # TODO: Persist the data in the cache or DB
         self.event_data.put_event(event=event)
 
     def get_event_count_by_duration_window(self, window_in_secs=1):

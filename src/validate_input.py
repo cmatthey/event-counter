@@ -17,6 +17,7 @@ def validate_input(f):
     Returns: wrapper
 
     """
+    # TODO: Validate the input against the payload
     @wraps(f)
     def wrapper(*args, **kwds):
         for k in kwds:

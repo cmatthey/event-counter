@@ -15,6 +15,7 @@ class EventData:
     A singleton class to store the events in a given duration defined by maxsize. Older events will be purged.
     Events are indexed by timestamp.
     """
+    # TODO: Revisit the data
     _instance = None
     maxsize = MAX_EVENT_COUNT_STORED_LENGTH # Max size to keep the event records
     queue = deque() # Store event timestamp by chronological order incremented by 1
