@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timezone
 
 from src.event_data import EventData
@@ -51,4 +52,4 @@ class EventCounter:
             if k < earliest_timestamp_in_sec:
                 break
             count += event_counts_by_timestamp_map[k]
-        return count
+        return json.dumps({"count": count, "request": {"secs_from_now": secs, "request_timestamp_in_sec": current_timestamp_in_sec}})
